@@ -8,7 +8,15 @@
             [clojure.data.json :as json])
   (:gen-class))
 
+(defn start []
+  (let [port (Integer/parseInt (or (System/getenv "PORT") "3000"))]
+    (server/run-server (fn [req] (route/not-found))
+                       {:port port
+                        :join? false
+                        :handler (wrap-defaults site-defaults
+                                                (route/not-found "Error! Page not found"))})))
+
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (start)
+  (println "Server started on port 3000"))
