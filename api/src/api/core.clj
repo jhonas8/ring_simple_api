@@ -5,16 +5,13 @@
             [ring.middleware.defaults :refer :all]
             [clojure.pprint :as pp]
             [clojure.string :as str]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [api.routes :as routes])
   (:gen-class))
 
 (defn start []
   (let [port (Integer/parseInt (or (System/getenv "PORT") "3000"))]
-    (server/run-server (fn [req] (route/not-found))
-                       {:port port
-                        :join? false
-                        :handler (wrap-defaults site-defaults
-                                                (route/not-found "Error! Page not found"))})))
+(server/run-server (wrap-defaults #'routes/app-routes site-defaults) {:port port})))
 
 (defn -main
   [& args]

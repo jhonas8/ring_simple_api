@@ -7,10 +7,25 @@
            [clojure.data.json :as json])
   (:gen-class))
 
-(declare defroutes)
-(declare GET)
+(defn simple-body-page [req]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body "<html><body><h1>Hello World</h1></body></html>"})
 
-(defroutes []
-  (GET "/" [] "Hello World")
-  (GET "/:name" [name] (str "Hello, " name))
+(defn request-example [req]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (->>
+           (pp/pprint req)
+           (str "Request Object: " req))})
+
+(defn params-example [req]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (str "<html><body><h1>Params Example</h1><p>Params: " (-> req :params :name) "</p></body></html>")})
+
+(defroutes app-routes 
+  (GET "/" [] simple-body-page)
+  (GET "/request" [] request-example)
+  (GET "/params" [] params-example)
   (route/not-found "Error! Page not found"))
