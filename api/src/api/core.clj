@@ -1,19 +1,22 @@
 (ns api.core
-  (:require [org.httpkit.server :as server]
-            [compojure.core :refer :all]
-            [compojure.route :as route]
-            [ring.middleware.defaults :refer :all]
-            [clojure.pprint :as pp]
-            [clojure.string :as str]
-            [clojure.data.json :as json]
-            [api.routes :as routes])
-  (:gen-class))
+  (:gen-class)
+  (:require
+    [com.mitranim.forge :as forge]
+    [com.stuartsierra.component :as component]
+    [api.util :as util :refer [getenv]]
+    [api.server]
+    [api.datomic]))
 
-(defn start []
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "3000"))]
-(server/run-server (wrap-defaults #'routes/app-routes site-defaults) {:port port})))
+(defn create-system [prev-sys]
+  (component/system-map
+    :dat (api.dat/new-dat prev-sys (getenv "DB_URI"))
+    :server (api.server/new-server prev-sys)))
 
-(defn -main
-  [& args]
-  (start)
-  (println "Server started on port 3000"))
+(defn -main []
+  (println "Starting system on thread" (str (Thread/currentThread)) "...")
+  (forge/reset-system! create-system))
+
+(defn -main-dev []
+  (forge/start-development! {:system-symbol `create-system})
+  (forge/reset-system! create-system)
+  (println "Started server on" (str "http://localhost:" (getenv "LOCAL_PORT"))))

@@ -7,7 +7,12 @@
                  [compojure "1.6.1"]
                  [http-kit "2.3.0"]
                  [ring/ring-defaults "0.3.2"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [com.datomic/datomic-pro "0.9.5561"]
+                 [com.stuartsierra/component "0.3.2"]
+                 [com.mitranim/forge "0.1.0"]
+                 [hiccup "1.0.5"]
+                 [com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer "20171016.1"]]
   :main ^:skip-aot api.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
