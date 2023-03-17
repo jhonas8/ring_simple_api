@@ -1,10 +1,10 @@
-(ns app.dat
+(ns api.datomic
   (:require
     [com.mitranim.forge :as forge]
     [com.stuartsierra.component :as component]
     [datomic.api :as d]
     [clojure.pprint :refer [pprint]]
-    [app.util :as util]))
+    [api.util :as util]))
 
 (set! *warn-on-reflection* true)
 
@@ -26,7 +26,7 @@
       (throw err))))
 
 
-(defrecord Dat [db-uri conn]
+(defrecord Datomic [db-uri conn]
   component/Lifecycle
 
   (start [this]
@@ -44,11 +44,11 @@
   clojure.lang.IDeref
   (deref [_] (when conn (d/db conn))))
 
-(defmethod print-method Dat [dat out]
+(defmethod print-method Datomic [dat out]
   (binding [*out* out] (clojure.pprint/simple-dispatch dat)))
 
-(defmethod clojure.pprint/simple-dispatch Dat [dat]
-  (print "#Dat")
+(defmethod clojure.pprint/simple-dispatch Datomic [dat]
+  (print "#Datomic")
   (pr (select-keys dat [:db-uri :conn])))
 
 
@@ -56,8 +56,8 @@
 (defn new-dat [prev-sys db-uri] {:pre [(string? db-uri)]}
   (let [{prev-uri :db-uri conn :conn} (:dat prev-sys)]
     (if (= prev-uri db-uri)
-      (new Dat db-uri conn)
-      (new Dat db-uri nil))))
+      (new Datomic db-uri conn)
+      (new Datomic db-uri nil))))
 
 
 
@@ -68,7 +68,7 @@
 ])
 
 
-(defn migrate [^Dat dat]
+(defn migrate [^Datomic dat]
   @(d/transact (:conn dat) schema)
   nil)
 
@@ -92,7 +92,7 @@
 
 
 
-(defn create-comment [^Dat dat body]
+(defn create-comment [^Datomic dat body]
   (if-let [body (not-empty (util/sanitize-permit-html body))]
     (do
       @(d/transact (:conn dat) [{:comment/body body}])

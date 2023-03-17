@@ -9,7 +9,7 @@
     [clojure.walk :refer [keywordize-keys]]
     [ring.util.anti-forgery :refer [anti-forgery-field]]
     [api.util :as util :refer [getenv]]
-    [api.dat :as dat])
+    [api.datomic :as dat])
   (:import
     [org.httpkit.server HttpServer]))
 
