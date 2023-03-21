@@ -33,10 +33,8 @@
     (when-not conn (try-create db-uri))
     (let [conn (or conn (try-connect db-uri))
           this (assoc this :conn conn)]
-      ; (when-not forge/development?
         (declare migrate)
         (migrate this)
-        ; )
       this))
 
   (stop [this] this)
